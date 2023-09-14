@@ -40,7 +40,7 @@ For this analysis, two pivotal variables were chosen:
 
 ## EM Algorithm 🔄
 
-![K-means GIF](./iterations%20gif/kmeans_animation.gif)
+![K-means GIF](./iterations%20gif/EM_wine_animation.gif)
 
 ### Two-Step Process:
 EM operates on the assumption that data is generated from a mixture of Gaussian distributions.
@@ -67,9 +67,6 @@ This project showcased the ability to utilize clustering methodologies to analyz
 
 ---
 
-**End Note:** For potential recruiters viewing this, this project serves as a testament to my data analytics prowess and my ability to extract meaningful patterns from complex data sets.
-
----
 
 ## Tools & Libraries 🛠️
 
