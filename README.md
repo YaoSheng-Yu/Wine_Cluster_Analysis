@@ -23,7 +23,7 @@ For this analysis, two pivotal variables were chosen:
 
 ## K-means Clustering 💠
 
-![K-means GIF](./iterations_gif/kmeans_animation.gif)
+![K-means GIF](./iterations gif/kmeans_animation.gif)
 
 ### Methodology: 
 - Start with random cluster centers, or 'centroids'.
@@ -40,7 +40,7 @@ For this analysis, two pivotal variables were chosen:
 
 ## EM Algorithm 🔄
 
-![EM GIF](./iterations_gif/EM_wine_animation.gif)
+![EM GIF](./iterations gif/EM_wine_animation.gif)
 
 ### Two-Step Process:
 EM operates on the assumption that data is generated from a mixture of Gaussian distributions.
