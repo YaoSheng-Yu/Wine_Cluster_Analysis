@@ -1,0 +1,159 @@
+---
+title: "wine cluster"
+author: "Yao-Sheng Yu"
+date: "2023-09-10"
+output: html_document
+---
+data source: https://archive.ics.uci.edu/dataset/186/wine+quality
+```{r setup, include=FALSE}
+library(cluster)
+
+
+library(ggplot2)
+library(magick)
+library(mclust)
+
+wine <- read.csv("wine.csv", header = TRUE)
+```
+
+define the data
+```{r}
+# Define your data
+mydata <- wine[, c("Flavanoids", "Color.int")]
+mydata <- scale(mydata) # Standardizing the data 
+
+```
+
+K-means clustering
+```{r}
+# K-means clustering
+
+dir_out_kmeans <- "./scatter/"
+dir.create(dir_out_kmeans, recursive = TRUE, showWarnings = FALSE)
+
+# Define Squared Euclidean Distance
+distxy = function(x,y) { return(sum( (x-y)^2)) }
+
+mydata = wine[,c("Flavanoids", "Color.int")]
+n = dim(mydata)[1]
+K = 3
+distance = matrix(0, n, K)
+
+# Initialize
+set.seed(1)
+cluster01 = rmultinom(n, size = 1, prob = c(0.3,0.3,0.4))
+cluster01.new = rmultinom(n, size = 1, prob = c(0.3,0.3,0.4))
+cluster123 = apply(cluster01.new, 2, which.max)
+
+colors = c("red", "green", "blue")  # fixed color vector
+
+i = 0
+while(sum(cluster01 != cluster01.new)) {
+  i = i + 1
+  if (i < 10) {name = paste('plot_00', i, '.jpeg', sep = '')}
+  if (i < 100 && i >= 10) {name = paste('plot_0', i, '.jpeg', sep = '')}
+  if (i >= 100) {name = paste('plot_', i, '.jpeg', sep = '')}
+  
+  df = data.frame(Flavanoids = mydata[,1], Color = mydata[,2], Cluster = factor(cluster123))
+  p = ggplot(df, aes(x = Flavanoids, y = Color, color = Cluster)) +
+    geom_point(size = 3, alpha = 0.7) +
+    scale_color_manual(values = colors) + 
+    labs(title = paste("K-mean Clustering (Wine Data): iteration = ", i)) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5), legend.position = "none")
+  ggsave(filename = paste(dir_out_kmeans, "/", name, sep = ""), plot = p, width = 7, height = 5)
+  
+  centroids = as.matrix(cluster01.new) %*% as.matrix(mydata) / rowSums(cluster01.new)
+  centroids = centroids[order(centroids[, 1]),]
+  cluster01 = cluster01.new
+  
+  for(k in 1:K) {
+    distance[, k] = apply(mydata, 1, distxy, centroids[k, ])
+  }
+  
+  cluster123 = apply(distance, 1, which.min)
+  cluster01.new = matrix(0, K, n)
+  for(k in 1:K) {
+    cluster01.new[k, cluster123 == k] = 1
+  }
+}
+
+# Generate animated GIF for K-means plots
+path_kmeans <- dir_out_kmeans
+plot_files_kmeans <- list.files(path_kmeans, pattern = "*.jpeg", full.names = TRUE)
+plots_kmeans <- lapply(plot_files_kmeans, image_read)
+animated_gif_kmeans <- image_animate(image_join(plots_kmeans), fps=1)
+image_write(animated_gif_kmeans, "./kmeans_animation.gif")
+
+```
+
+# EM clustering
+```{r}
+# EM clustering
+
+# Define number of clusters and data points
+K <- 3
+n <- nrow(mydata)
+
+# Create a directory for saving plots (if not already existing)
+dir_out <- "EM_wine_plots" 
+dir.create(dir_out, recursive = TRUE, showWarnings = FALSE)
+
+# Initialize clusters
+set.seed(1) # You can also try different seeds to ensure the initialization isn't causing the issue
+cluster01 = matrix(0, n, K)
+cluster01.new = matrix(0, n, K)
+
+# Initialize parameters
+p.old <- rep(1/K, K)
+p.new <- p.old
+# Initialize means using K-means
+km <- kmeans(mydata, centers = K)
+mu.old <- km$centers
+mu.new <- mu.old
+# Initialize covariances using the sample covariance
+sigma.old <- array(rep(cov(mydata), K), dim = c(2,2,K))
+sigma.new <- sigma.old
+
+# Start EM algorithm
+iter <- 0
+while(iter < 15) {
+  # E-step
+  for(k in 1:K) {
+    cluster01.new[,k] <- p.old[k] * dmvnorm(mydata, mean = mu.old[k,], sigma = sigma.old[,,k])
+  }
+  cluster01.new <- cluster01.new / rowSums(cluster01.new)
+  
+  # M-step
+  p.new <- colMeans(cluster01.new)
+  for(k in 1:K) {
+    mu.new[k,] <- colSums(cluster01.new[,k] * mydata) / sum(cluster01.new[,k])
+    residuals = as.matrix(sweep(mydata, 2, mu.new[k,]))
+    sigma.new[,,k] <- (t(residuals) %*% (residuals * cluster01.new[,k])) / sum(cluster01.new[,k])
+  }
+  
+  # Update the old parameters with the new ones
+  p.old <- p.new
+  mu.old <- mu.new
+  sigma.old <- sigma.new
+  
+  # Plotting each iteration
+  clusters <- apply(cluster01.new, 1, which.max)
+  plot <- ggplot(data.frame(mydata, Cluster = factor(clusters)), aes(x = Flavanoids, y = Color.int, color = Cluster)) +
+    geom_point(size = 3, alpha = 0.7) +
+    ggtitle(paste("EM Iteration", iter))
+  ggsave(filename = paste0(dir_out, "/EM_iter", iter, ".png"), plot = plot, width = 7, height = 5)
+  
+  iter <- iter + 1
+}
+
+# Generate GIF using magick package
+library(magick)
+
+file_list <- list.files(path = dir_out, pattern = "*.png", full.names = TRUE)
+animation <- image_read(file_list) %>% 
+  image_animate(fps = 1) # Here, fps stands for frames per second, which means each frame will last for 1 second.
+image_write(animation, "EM_wine_animation.gif")
+
+```
+
