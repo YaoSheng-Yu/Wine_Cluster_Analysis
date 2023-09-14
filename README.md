@@ -21,7 +21,7 @@ For this analysis, two pivotal variables were chosen:
 
 ---
 
-## K-means Clustering 💠
+## K-means Clustering 
 
 ![K-means GIF](./iterations%20gif/kmeans_animation.gif)
 
@@ -38,7 +38,7 @@ For this analysis, two pivotal variables were chosen:
 
 ---
 
-## EM Algorithm 🔄
+## EM Algorithm 
 
 ![K-means GIF](./iterations%20gif/EM_wine_animation.gif)
 
@@ -53,7 +53,7 @@ EM operates on the assumption that data is generated from a mixture of Gaussian 
   
 ---
 
-## K-means vs EM: Key Differences 🔍
+## K-means vs EM: Key Differences 
 
 - **Model Assumptions:** K-means assumes spherical clusters with the same variance, while EM employs Gaussian distributions for each cluster.
 - **Assignment:** K-means uses 'hard' assignment, placing each data point in one cluster. In contrast, EM operates on 'soft' assignments based on probabilistic inferences.
@@ -61,14 +61,14 @@ EM operates on the assumption that data is generated from a mixture of Gaussian 
 
 ---
 
-## Conclusion & Reflections 🌟
+## Conclusion & Reflections 
 
 This project showcased the ability to utilize clustering methodologies to analyze and understand inherent patterns in data. While labels are available, clustering provided insights into the validity of these labels and emphasized the different strengths and nuances of K-means and EM clustering techniques. 
 
 ---
 
 
-## Tools & Libraries 🛠️
+## Tools & Libraries 🛠
 
 - **R**
 - **ggplot2** for visualizations
@@ -76,7 +76,7 @@ This project showcased the ability to utilize clustering methodologies to analyz
 
 ---
 
-## Further Exploration 🚀
+## Further Exploration 
 
 - Test additional clustering methods.
 - Incorporate more features from the wine dataset.
