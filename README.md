@@ -68,18 +68,12 @@ This project showcased the ability to utilize clustering methodologies to analyz
 ---
 
 
-## Tools & Libraries 🛠
+## Tools & Libraries 
 
 - **R**
 - **ggplot2** for visualizations
 - **mclust** for EM clustering
 
----
 
-## Further Exploration 
-
-- Test additional clustering methods.
-- Incorporate more features from the wine dataset.
-- Explore dimensionality reduction techniques to better visualize higher-dimensional data.
 
 
